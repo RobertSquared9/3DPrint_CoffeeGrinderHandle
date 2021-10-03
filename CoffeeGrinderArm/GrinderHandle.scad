@@ -5,6 +5,9 @@ handle_thickness = 8;
 handle_curve = 65;
 handle_width=18;
 
+handle_curve_radius = 130;
+handle_curve_angle = 45;
+
 hex_mm = 7;
 cyl_cutout = sqrt((2*pow(hex_mm, 2)) / (cos(60)+1)); // 60deg for hex (360/6)
 echo("dist to origin", sqrt(pow((cyl_cutout*sin(60))/2, 2) + pow((cyl_cutout*cos(60)+cyl_cutout)/2, 2)));
@@ -38,24 +41,24 @@ spin_d = 21-0.01;
 translate([0,0,-handle_thickness]) 
 {
 	// handle arc
-	translate([handle_curve*2 + handle_width/2, 0, 0]) 
 	difference() 
 	{ 
-		cylinder(r=handle_curve*2+handle_width,  h = handle_thickness); 
+        chamfer_radius = 2;
+        chamferred_handle(handle_width, handle_thickness, handle_curve_radius, handle_curve_angle, chamfer_radius);
 			
 		translate([0,0,-0.5])
 		{
 			// cut out until donut
-			cylinder(r=handle_curve*2, h = handle_thickness+1); 
+			//cylinder(r=handle_curve*2, h = handle_thickness+1); 
 			
 			// remove the circle bits
-			translate([-handle_curve*2 - handle_width*2, 0, 0]) cube([2*(handle_curve*2 + handle_width*2),handle_curve*2 + handle_width*2,handle_thickness+1]);
-			translate([0, -handle_curve*2 - handle_width*2, 0]) cube([handle_curve*2 + handle_width*2, 2*(handle_curve*2 + handle_width*2),handle_thickness+1]);
+			//translate([-handle_curve*2 - handle_width*2, 0, 0]) cube([2*(handle_curve*2 + handle_width*2),handle_curve*2 + handle_width*2,handle_thickness+1]);
+			//translate([0, -handle_curve*2 - handle_width*2, 0]) cube([handle_curve*2 + handle_width*2, 2*(handle_curve*2 + handle_width*2),handle_thickness+1]);
             //trim remaining arc from just after the bearing
-            translate(spin_loc - [handle_curve*2 + handle_width/2 + 5, 95, 0]) cube([120, 100, 20]);
+            translate(spin_loc - [5, 95, 0]) cube([120, 100, 20]);
 			
 			// remove the cylinder for the spinner
-			translate(spin_loc - [handle_curve*2 + handle_width/2, 0, 0]) cylinder(h=handle_thickness+1, d=spin_d);
+			translate(spin_loc) cylinder(h=handle_thickness+1, d=spin_d);
 		}
 	}
 	
@@ -78,6 +81,27 @@ translate([0,0,-handle_thickness])
 
 
 function polygon_edge_dist_to_corner_dist(edge_dist, num_sides) = sqrt((2*pow(edge_dist, 2)) / (cos(360/num_sides)+1));
+
+module chamferred_handle(width, thickness, curve_radius = 130, curve_angle = 45, chamfer_amount = 2)
+{
+  circ_r = chamfer_amount;
+  rec_w = width - 2 * circ_r;
+  rec_h = thickness - 2 * circ_r;
+  rotate([0,180,0]) mirror([0,1,0])
+  translate([-curve_radius - width/2,0,-thickness]) 
+  rotate_extrude(angle = curve_angle) 
+  translate([curve_radius, 0, 0])
+  rotate(180) mirror([1,1,0])
+  translate([circ_r,circ_r,0]) 
+  {
+    minkowski()
+    {
+      square([rec_h, rec_w]);
+      echo ([rec_h, rec_w]);
+      circle(r=circ_r);
+    }
+  }
+}
 
 
 
