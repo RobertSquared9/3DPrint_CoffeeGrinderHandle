@@ -1,6 +1,6 @@
 $fn=180;
-outer_socket_depth = 18;
-hex_depth = 6;
+outer_socket_depth = 12;
+hex_depth = 6.5;
 handle_thickness = 8;
 handle_curve = 65;
 handle_width=18;
@@ -22,12 +22,12 @@ difference()
 	// Hex section
 	rotate(360/12) translate([0,0,-0.5]) cylinder(h=outer_socket_depth, d=cyl_cutout, $fn=6);
 	// Inner circle section
-	rotate(360/12) translate([0,0,hex_depth]) cylinder(h=outer_socket_depth-hex_depth + 0.5, d=cyl_cutout);
+	rotate(360/12) translate([0,0,hex_depth]) cylinder(h=outer_socket_depth-hex_depth + 0.5, d=cyl_cutout+0.5);
     
     //We make the bottom of the socket a circle because the shaft isn't a pefect hex all the way down - it gets a little wider at the base where it meets the grinder
     inner_circle_depth = 1.5; //this plus hex_depth should equal the length of exposed hex shaft
     
-    lower_shaft_width=12;
+    lower_shaft_width=12.5;
     // Outer circle section
 	rotate(360/12) translate([0,0,hex_depth+inner_circle_depth]) cylinder(h=outer_socket_depth-hex_depth + 0.5, d=lower_shaft_width);
 }
@@ -48,12 +48,6 @@ translate([0,0,-handle_thickness])
 			
 		translate([0,0,-0.5])
 		{
-			// cut out until donut
-			//cylinder(r=handle_curve*2, h = handle_thickness+1); 
-			
-			// remove the circle bits
-			//translate([-handle_curve*2 - handle_width*2, 0, 0]) cube([2*(handle_curve*2 + handle_width*2),handle_curve*2 + handle_width*2,handle_thickness+1]);
-			//translate([0, -handle_curve*2 - handle_width*2, 0]) cube([handle_curve*2 + handle_width*2, 2*(handle_curve*2 + handle_width*2),handle_thickness+1]);
             //trim remaining arc from just after the bearing
             translate(spin_loc - [5, 95, 0]) cube([120, 100, 20]);
 			
@@ -68,13 +62,13 @@ translate([0,0,-handle_thickness])
 	// Add cool grinder knob
 	translate(spin_loc)
 	{
-        clearance = 0.35;
+        clearance = 0.4;
 		stator(clearance);
 		difference()
 		{
 			rotor(clearance);
-			translate([0,0,-0.5]) cylinder(h=handle_thickness*2 + 1, d=5.2); //hole for bolt shaft
-			translate([0,0,8-4]) cylinder(h=5, d=polygon_edge_dist_to_corner_dist(8, 6), $fn=6); //hex hole for bolt head
+			translate([0,0,-0.5]) cylinder(h=handle_thickness*2 + 1, d=5.5); //hole for bolt shaft
+			translate([0,0,8-4]) cylinder(h=5, d=polygon_edge_dist_to_corner_dist(8.2, 6), $fn=6); //hex hole for bolt head
 		}
 	}
 }
